@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     # Redis
     REDIS_DSN: RedisDsn = Field(
-        os.getenv("REDIS_DSN", "redis://localhost:6379"),
+        os.getenv("REDIS_DSN", "redis://172.17.0.3:6379"),
         validation_alias=AliasChoices('service_redis_dsn', 'redis_url'),
 
     )

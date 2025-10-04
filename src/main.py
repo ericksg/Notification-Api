@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from starlette.websockets import WebSocket
 
 from src.core.config import settings
