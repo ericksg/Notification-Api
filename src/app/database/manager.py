@@ -16,6 +16,7 @@ class AsyncDatabaseManager:
         query = (
             select(Notification)
             .where(Notification.audience == audience)
+            .order_by(Notification.unread.desc(), Notification.created_at.desc())
             .offset(offset)
             .limit(per_page)
         )
@@ -33,9 +34,9 @@ class AsyncDatabaseManager:
         query = (
             select(Notification)
             .where(Notification.audience == audience)
-            .with_only_columns([Notification.id])  # type: ignore
+            .with_only_columns(Notification.id)
             .distinct()
-        )  # type: ignore
+        )
         result = await self.session.execute(query)
         return len(result.all())
 
