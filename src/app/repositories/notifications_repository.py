@@ -2,7 +2,7 @@ from src.app.database.manager import AsyncDatabaseManager
 
 
 class NotificationsRepository:
-    def __init__(self, session: AsyncDatabaseManager):
+    def __init__(self, session: AsyncDatabaseManager | None):
         self.database: AsyncDatabaseManager = session
 
     async def is_alive(self):
