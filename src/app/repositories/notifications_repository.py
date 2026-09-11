@@ -1,7 +1,7 @@
 import asyncio
 
-class NotificationsRepository:
 
+class NotificationsRepository:
     async def is_alive(self):
         return {"status": "Notifications is alive"}
 
@@ -13,13 +13,9 @@ class NotificationsRepository:
         pubsub = cache_provider.pubsub()
         await pubsub.psubscribe(channel)
 
-        redis_task = asyncio.create_task(
-            cache_provider.listen(pubsub, websocket)
-        )
+        redis_task = asyncio.create_task(cache_provider.listen(pubsub, websocket))
 
-        ws_task = asyncio.create_task(
-            self._ws_disconnect_listener(websocket)
-        )
+        ws_task = asyncio.create_task(self._ws_disconnect_listener(websocket))
 
         done, pending = await asyncio.wait(
             {redis_task, ws_task},
