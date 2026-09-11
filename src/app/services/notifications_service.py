@@ -7,6 +7,3 @@ class NotificationsService:
 
     async def is_alive(self):
         return await self.repo.is_alive()
-
-    async def ws_root(self, websocket, channel):
-        await self.repo.socket_notifications(websocket, channel)
