@@ -10,3 +10,9 @@ class NotificationsRepository:
 
     async def get_notifications(self, user_id: str, page):
         return await self.database.get_notifications(audience=user_id, page=page)
+
+    async def mark_notifications(self, notification_id: int, unread: bool):
+        return await self.database.mark_notification(notification_id, unread)
+
+    async def delete_notifications(self, notification_id: int):
+        return await self.database.delete_notification(notification_id)

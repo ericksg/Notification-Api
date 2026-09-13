@@ -1,10 +1,15 @@
 import asyncio
+import datetime
 import json  # Importar la biblioteca json
 
 import redis.asyncio as redis
 from pydantic import RedisDsn
 from redis.asyncio.client import PubSub, Redis
 from starlette.websockets import WebSocket
+
+from src.app.database.manager import AsyncDatabaseManager
+from src.app.database.sessions import AsyncSessionLocal
+from src.app.models.notifications_model import Notification
 
 
 class RedisProvider:
@@ -67,16 +72,26 @@ class RedisProvider:
 
                 try:
                     # Deserializar el mensaje JSON recibido
-                    obj_message = json.loads(text_message)
+                    notification_data = json.loads(text_message)
+                    notification_data["created_at"] = datetime.datetime.fromisoformat(
+                        notification_data.get(
+                            "created_at", datetime.datetime.utcnow().isoformat()
+                        )
+                    )
+                    notification = Notification(**notification_data)
                 except json.JSONDecodeError as e:
                     print(f"[RedisProvider] Error decoding JSON: {e}")
                     continue
+
+                # persiste on database
+                if notification.audience != "all":
+                    await self.save_notification(notification)
 
                 # Enviar mensaje al WebSocket con timeout
                 try:
                     await asyncio.wait_for(
                         websocket.send_text(
-                            json.dumps(obj_message)
+                            json.dumps(text_message)
                         ),  # Serializar el objeto antes de enviarlo
                         timeout=5,
                     )
@@ -105,3 +120,8 @@ class RedisProvider:
                 print(f"[RedisProvider] Error closing Redis connection: {e}")
             finally:
                 self.redis_connection = None
+
+    async def save_notification(self, notification):
+        async with AsyncSessionLocal() as session:
+            db_manager = AsyncDatabaseManager(session)
+            await db_manager.add_notification(notification)

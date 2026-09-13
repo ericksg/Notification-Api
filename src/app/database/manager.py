@@ -28,6 +28,7 @@ class AsyncDatabaseManager:
             "notifications": result.scalars().all(),
             "next_page": next_page,
             "unread_count": unread_count,
+            "total_count": total_count,
         }
 
     async def get_total_count(self, audience: str):
@@ -62,6 +63,16 @@ class AsyncDatabaseManager:
             await self.session.delete(notification)
             await self.session.commit()
         return notification
+
+    async def mark_notification(self, notification_id: int, unread: bool):
+        query = select(Notification).where(Notification.id == notification_id)
+        result = await self.session.execute(query)
+        notification = result.scalar_one()
+        if notification:
+            notification.unread = unread
+            await self.session.commit()
+            return notification
+        return None
 
     async def purge_notifications(self, audience: str):
         thirty_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=30)
