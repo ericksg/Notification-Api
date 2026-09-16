@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from src.app.core.config import settings
 from src.app.core.lifespan import lifespan
+from src.app.core.middlewares import add_middlewares
 from src.app.routers import notifications_router, real_time_notifications_router
 
 
@@ -22,3 +23,5 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+add_middlewares(app, settings)

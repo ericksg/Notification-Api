@@ -14,15 +14,17 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
-    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = os.getenv("BACKEND_CORS_ORIGINS", [])
+    BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = os.getenv(
+        "BACKEND_CORS_ORIGINS", ["http://192.168.50.1:3000"]
+    )  # type: ignore
 
     # Global config
     PROJECT_NAME: str = "Brand Notification API"
 
     # ALLOWED_HOST
-    ALLOWED_HOSTS: str | list[str] = os.getenv(
-        "ALLOWED_HOSTS", ["127.0.0.1", "localhost", "100.70.210.123"]
-    )
+    ALLOWED_HOSTS: list[str] = os.getenv(
+        "ALLOWED_HOSTS", ["127.0.0.1", "localhost", "192.168.50.1"]
+    )  # type: ignore
 
     # Redis
     REDIS_DSN: RedisDsn = Field(
